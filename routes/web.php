@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\PeriodeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,7 +32,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('home', function () {
         return view('home.index');
     })->name('home');
-
+    
     Route::get('subject/data', [SubjectController::class, 'data'])->name('subject.data');
     Route::resource('subject', SubjectController::class);
 
@@ -40,6 +41,10 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('student/data', [StudentController::class, 'data'])->name('student.data');
     Route::resource('student', StudentController::class);
+
+    Route::post('periode/switch_status', [PeriodeController::class, 'switch_status'])->name('periode.switch.status');
+    Route::get('periode/data', [PeriodeController::class, 'data'])->name('periode.data');
+    Route::resource('periode', PeriodeController::class);
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

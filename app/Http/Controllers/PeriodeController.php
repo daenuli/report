@@ -24,6 +24,7 @@ class PeriodeController extends Controller
         $data['desc'] = 'List';
         $data['ajax'] = route($this->uri.'.data');
         $data['create'] = route($this->uri.'.create');
+        $data['switch_status'] = route($this->uri.'.switch.status');
         return view($this->folder.'.index', $data);
     }
 
@@ -33,7 +34,26 @@ class PeriodeController extends Controller
         $data = $this->table->select(['id', 'name', 'status', 'created_at']);
         return DataTables::of($data)
         ->editColumn('status', function ($index) {
-            return ($index->status) ? '<span class="badge badge-success">aktif</span>' : '<span class="badge badge-warning">tidak aktif</span>';
+            if ($index->status) {
+                return '
+                <div class="checkbox checbox-switch switch-primary">
+                    <label>
+                        <input type="checkbox" class="switch-status" data-id="'.$index->id.'" name="status" checked/>
+                        <span></span>
+                    </label>
+                </div>
+                ';
+            } else {
+                return '
+                <div class="checkbox checbox-switch switch-primary">
+                    <label>
+                        <input type="checkbox" class="switch-status" data-id="'.$index->id.'" name="status"/>
+                        <span></span>
+                    </label>
+                </div>
+                ';
+            }
+            // return ($index->status) ? '<span class="badge badge-success">aktif</span>' : '<span class="badge badge-warning">tidak aktif</span>';
         })
         ->editColumn('created_at', function ($index) {
             return isset($index->created_at) ? $index->created_at->format('d F Y H:i:s') : '-';
@@ -45,7 +65,7 @@ class PeriodeController extends Controller
             $tag .= Form::close();
             return $tag;
         })
-        ->rawColumns(['id', 'action'])
+        ->rawColumns(['id', 'status', 'action'])
         ->make(true);
     }
 
@@ -62,7 +82,7 @@ class PeriodeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|unique:periods,name'
         ]);
         $this->table->create($request->all());
         return redirect(route($this->uri.'.index'))->with('success', trans('message.create'));
@@ -81,7 +101,7 @@ class PeriodeController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required'
+            'name' => 'required|unique:periods,name,'.$id
         ]);
 
         $this->table->find($id)->update($request->all());
@@ -94,5 +114,17 @@ class PeriodeController extends Controller
         $tb = $this->table->find($id);
         $tb->delete();
         return redirect(route($this->uri.'.index'))->with('success', trans('message.delete'));
+    }
+
+    public function switch_status(Request $request)
+    {
+        $data = $this->table->find($request->id);
+        $data->status = ($request->status === 'true') ? 1 : 0;
+        $data->save();
+
+        if ($request->status === 'true') {
+            $this->table->where('id', '!=', $request->id)->update(['status' => 0]);
+        }
+        return response()->json($data);
     }
 }

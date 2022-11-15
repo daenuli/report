@@ -20,13 +20,18 @@
                 { data: 'created_at', searchable: true, orderable: true},
                 { data: 'action', searchable: false, orderable: false}
             ],
-            columnDefs: [{
-                "targets": 0,
-                "data": null,
-                "render": function (data, type, full, meta) {
-                    return meta.settings._iDisplayStart + meta.row + 1;
+            columnDefs: [
+                {
+                    "targets": 0,
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        return meta.settings._iDisplayStart + meta.row + 1;
+                    }
+                },
+                {
+                    className: 'text-center', targets: [0,1,2,3]
                 }
-            }],
+            ],
         });
     });
     $(document).on('click', '.delete', function () {

@@ -38,6 +38,11 @@
         <i class="fa fa-graduation-cap"></i> <span>Siswa</span>
       </a>
     </li>
+    <li class="{{($urlactive == 'periode') ? 'active' : ''}}">
+      <a href="{{url('periode')}}">
+        <i class="fa fa-calendar"></i> <span>Periode</span>
+      </a>
+    </li>
     <li class="{{($urlactive == 'report') ? 'active' : ''}}">
       <a href="{{url('report')}}">
         <i class="fa fa-newspaper-o"></i> <span>Report</span>
