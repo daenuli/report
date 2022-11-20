@@ -45,7 +45,7 @@
                 {
                     className: 'text-center', targets: [0,1,3]
                 }
-            ],
+            ]
         });
     });
     $(document).on('click', '.delete', function () {

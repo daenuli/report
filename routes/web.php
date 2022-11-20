@@ -6,6 +6,7 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\PeriodeController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +46,12 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('periode/switch_status', [PeriodeController::class, 'switch_status'])->name('periode.switch.status');
     Route::get('periode/data', [PeriodeController::class, 'data'])->name('periode.data');
     Route::resource('periode', PeriodeController::class);
+    
+    Route::get('report/data', [ReportController::class, 'data'])->name('report.data');
+    Route::get('report/detail/{kelas_id}/{period_id}/{student_id}', [ReportController::class, 'detail_student'])->name('report.student.show');
+    Route::get('report/student/{kelas_id}', [ReportController::class, 'student'])->name('report.student');
+    Route::get('report/{kelas_id}', [ReportController::class, 'show'])->name('report.show');
+    Route::get('report', [ReportController::class, 'index'])->name('report.index');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
