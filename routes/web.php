@@ -48,10 +48,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('periode', PeriodeController::class);
     
     Route::get('report/data', [ReportController::class, 'data'])->name('report.data');
-    Route::get('report/detail/{kelas_id}/{period_id}/{student_id}', [ReportController::class, 'detail_student'])->name('report.student.show');
+    Route::get('report/detail/{kelas_id}/{period_id}/{student_id}/{id}', [ReportController::class, 'detail_student'])->name('report.student.show');
+    Route::get('report/detail/data/{kelas_id}/{period_id}/{student_id}', [ReportController::class, 'data_detail_student'])->name('report.student.data');
     Route::get('report/student/{kelas_id}', [ReportController::class, 'student'])->name('report.student');
     Route::get('report/{kelas_id}', [ReportController::class, 'show'])->name('report.show');
     Route::get('report', [ReportController::class, 'index'])->name('report.index');
+    Route::post('report', [ReportController::class, 'store'])->name('report.store');
+    Route::post('report/store', [ReportController::class, 'store'])->name('report.store.mapel');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

@@ -46,7 +46,7 @@ class StudentController extends Controller
             return isset($index->date_of_birth) ? Carbon::parse($index->date_of_birth)->age : '-';
         })
         ->editColumn('photo', function ($index) {
-            return isset($index->photo) ? '<img src="'.asset($index->photo).'" width="50" />' : '-';
+            return isset($index->photo) ? '<img src="'.asset($index->photo).'" width="100" />' : '-';
         })
         ->addColumn('action', function ($index) {
             $tag = Form::open(array("url" => route($this->uri.'.destroy',$index->id), "method" => "DELETE"));
@@ -55,7 +55,7 @@ class StudentController extends Controller
             $tag .= Form::close();
             return $tag;
         })
-        ->rawColumns(['id', 'gender', 'action'])
+        ->rawColumns(['id', 'gender', 'photo', 'action'])
         ->make(true);
     }
 
@@ -72,8 +72,23 @@ class StudentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'nis' => 'required|numeric',
             'name' => 'required',
+            'address' => 'required',
+            'birth_place' => 'required',
+            'date_of_birth' => 'required',
+            'gender' => 'required',
+            'phone' => 'required|numeric',
+            'foto' => 'nullable|image',
         ]);
+
+        if($request->hasFile('foto')) {
+            $path = $request->file('foto')->storePublicly('students', 'public_upload');
+            $request->merge([
+                'photo' => (isset($path) && !empty($path)) ? $path : null
+            ]);
+        }
+
         $this->table->create($request->all());
         return redirect(route($this->uri.'.index'))->with('success', trans('message.create'));
     }

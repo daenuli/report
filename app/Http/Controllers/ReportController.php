@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Period;
 use App\Models\Kelas;
+use App\Models\Student;
+use App\Models\Subject;
 use App\Models\StudentClass;
+use App\Models\StudentSubject;
 use DataTables;
 use Form;
 
@@ -79,12 +82,33 @@ class ReportController extends Controller
         
         return DataTables::of($data)
         ->addColumn('action', function ($index) {
-            $url = route($this->uri.'.student.show', ['kelas_id' => $index->kelas_id, 'period_id' => $index->period_id, 'student_id' => $index->student_id]);
+            $url = route($this->uri.'.student.show', ['kelas_id' => $index->kelas_id, 'period_id' => $index->period_id, 'student_id' => $index->student_id, 'id' => $index->id]);
             $tag = "<a href=".$url." class='btn btn-primary btn-xs'>Detail</a>";
             return $tag;
         })
         ->rawColumns(['id', 'action'])
         ->make(true);
+    }
+
+    public function detail_student(Request $request)
+    {
+        $data['title'] = $this->title;
+        $data['desc'] = 'Detail Student';
+        $data['action'] = route($this->uri.'.store.mapel');
+        $data['ajax'] = route($this->uri.'.student.data', ['kelas_id' => $request->kelas_id, 'period_id' => $request->period_id, 'student_id' => $request->student_id]);
+        $data['url'] = route($this->uri.'.show', $request->kelas_id);
+        $data['student'] = Student::find($request->student_id);
+        $data['kelas'] = Kelas::find($request->kelas_id);
+        $data['subjects'] = Subject::orderBy('name')->get();
+        $data['student_class_id'] = $request->id;
+        return view($this->folder.'.detail_student', $data);
+        // return response()->json($request->student_id);
+    }
+
+    public function data_detail_student(Request $request)
+    {
+        // if (!$request->ajax()) { return; }
+
     }
 
 
@@ -97,14 +121,17 @@ class ReportController extends Controller
     //     return view($this->folder.'.create', $data);
     // }
 
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'name' => 'required',
-    //     ]);
-    //     $this->table->create($request->all());
-    //     return redirect(route($this->uri.'.index'))->with('success', trans('message.create'));
-    // }
+    public function store(Request $request)
+    {
+        $request->validate([
+            'subject_id' => 'required',
+            'score' => 'required',
+            'note' => 'required',
+        ]);
+
+        StudentSubject::create($request->all());
+        return redirect()->back()->with('success', trans('message.create'));
+    }
 
     // public function update(Request $request, $id)
     // {
