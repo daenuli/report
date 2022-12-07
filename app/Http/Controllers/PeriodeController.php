@@ -60,8 +60,8 @@ class PeriodeController extends Controller
         })
         ->addColumn('action', function ($index) {
             $tag = Form::open(array("url" => route($this->uri.'.destroy',$index->id), "method" => "DELETE"));
-            $tag .= "<a href=".route($this->uri.'.edit',$index->id)." class='btn btn-primary btn-xs'>edit</a>";
-            $tag .= " <button type='submit' class='delete btn btn-danger btn-xs'>delete</button>";
+            $tag .= "<a href=".route($this->uri.'.edit',$index->id)." class='btn btn-primary btn-xs'>Edit</a>";
+            $tag .= " <button type='submit' class='delete btn btn-danger btn-xs'>Hapus</button>";
             $tag .= Form::close();
             return $tag;
         })

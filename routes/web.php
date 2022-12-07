@@ -49,7 +49,10 @@ Route::group(['middleware' => ['auth']], function () {
     
     Route::get('report/data', [ReportController::class, 'data'])->name('report.data');
     Route::get('report/detail/{kelas_id}/{period_id}/{student_id}/{id}', [ReportController::class, 'detail_student'])->name('report.student.show');
-    Route::get('report/detail/data/{kelas_id}/{period_id}/{student_id}', [ReportController::class, 'data_detail_student'])->name('report.student.data');
+    Route::get('report/subject/data/{id}', [ReportController::class, 'data_subject_student'])->name('report.student.subject');
+    Route::get('report/subject/edit/{id}', [ReportController::class, 'subject_edit'])->name('report.student.subject.edit');
+    Route::post('report/subject/update', [ReportController::class, 'subject_update'])->name('report.student.subject.update');
+    Route::get('report/subject/delete/{id}', [ReportController::class, 'subject_delete'])->name('report.student.subject.delete');
     Route::get('report/student/{kelas_id}', [ReportController::class, 'student'])->name('report.student');
     Route::get('report/{kelas_id}', [ReportController::class, 'show'])->name('report.show');
     Route::get('report', [ReportController::class, 'index'])->name('report.index');

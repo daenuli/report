@@ -16,4 +16,9 @@ class StudentSubject extends Model
         'note'
     ];
 
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
+    }
+
 }

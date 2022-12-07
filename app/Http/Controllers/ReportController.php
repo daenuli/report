@@ -95,21 +95,61 @@ class ReportController extends Controller
         $data['title'] = $this->title;
         $data['desc'] = 'Detail Student';
         $data['action'] = route($this->uri.'.store.mapel');
-        $data['ajax'] = route($this->uri.'.student.data', ['kelas_id' => $request->kelas_id, 'period_id' => $request->period_id, 'student_id' => $request->student_id]);
+        $data['ajax'] = route($this->uri.'.student.subject', ['id' => $request->id]);
+        // $data['ajax'] = route($this->uri.'.student.data', ['kelas_id' => $request->kelas_id, 'period_id' => $request->period_id, 'student_id' => $request->student_id]);
         $data['url'] = route($this->uri.'.show', $request->kelas_id);
         $data['student'] = Student::find($request->student_id);
         $data['kelas'] = Kelas::find($request->kelas_id);
-        $data['subjects'] = Subject::orderBy('name')->get();
+        $subjectId = StudentSubject::where('student_class_id', $request->id)->pluck('subject_id');
+        $data['subjects'] = Subject::orderBy('name')->whereNotIn('id', $subjectId)->get();
+        $data['all_subjects'] = Subject::orderBy('name')->get();
+        $data['update_subject'] = route($this->uri.'.student.subject.update');
         $data['student_class_id'] = $request->id;
         return view($this->folder.'.detail_student', $data);
         // return response()->json($request->student_id);
     }
 
-    public function data_detail_student(Request $request)
+    public function data_subject_student(Request $request)
     {
-        // if (!$request->ajax()) { return; }
+        if (!$request->ajax()) { return; }
 
+        $data = StudentSubject::with('subject:id,name')
+                ->where('student_class_id', $request->id)
+                ->get();
+        return DataTables::of($data)
+        ->addColumn('action', function ($index) {
+            $edit = route($this->uri.'.student.subject.edit', $index->id);
+            $delete = route($this->uri.'.student.subject.delete', $index->id);
+            $tag = "<a href='javascript:void(0)' data-url=".$edit." class='btn btn-primary btn-xs edit-mapel'>Edit</a>";
+            $tag .= " <a href=".$delete." class='btn btn-danger btn-xs'>Hapus</a>";
+            return $tag;
+        })
+        ->rawColumns(['id', 'action'])
+        ->make(true);
     }
+
+    public function subject_edit($id)
+    {
+        $data = StudentSubject::find($id);
+        return response()->json($data);
+    }
+
+    public function subject_update(Request $request)
+    {
+        $data = StudentSubject::find($request->id);
+        $data->score = $request->score;
+        $data->note = $request->note;
+        $data->save();
+        return redirect()->back()->with('success', trans('message.update'));
+    }
+
+    public function subject_delete($id)
+    {
+        StudentSubject::find($id)->delete();
+        return redirect()->back()->with('success', trans('message.delete'));
+    }
+    
+    
 
 
     // public function create()

@@ -87,6 +87,10 @@
 @endif
 
 <div class="box">
+    <div class="box-header with-border">
+        <a href="javascript:void(0)" class="btn btn-primary add-student"><i class="fa fa-fw fa-plus"></i> Tambah Siswa</a>
+        <a href="javascript:void(0)" class="btn btn-success add-teacher"><i class="fa fa-fw fa-plus"></i> Tambah Wali Kelas</a>
+    </div>
 	<div class="box-body">
 	  	<table id="dataTable" class="table table-bordered table-hover">
             <thead>

@@ -11,51 +11,51 @@
     <script>
     var table;
     $(function() {
-        // table = $('#dataTable').DataTable({
-        //     processing: true,
-        //     serverSide: true,
-        //     ajax: '{{$ajax}}',
-        //     order: [[1,'asc']],
-        //     columns: [
-        //         { data: 'id', searchable: false, orderable: false},
-        //         { data: 'student.name', name: 'student.name', searchable: true, orderable: true},
-        //         { data: 'student.date_of_birth', name: 'date_of_birth', searchable: false, orderable: true},
-        //         { data: 'student.gender', name: 'gender', searchable: true, orderable: true},
-        //         { data: 'status', name: 'status', searchable: true, orderable: true},
-        //         { data: 'action', searchable: false, orderable: false}
-        //     ],
-        //     columnDefs: [
-        //         {
-        //             "targets": 0,
-        //             "data": null,
-        //             "render": function (data, type, full, meta) {
-        //                 return meta.settings._iDisplayStart + meta.row + 1;
-        //             }
-        //         },
-        //         {
-        //             "targets": 2,
-        //             "render": function (data, type, full, meta) {
-        //                 return moment().diff(data, 'years');
-        //             }
-        //         },
-        //         {
-        //             "targets": 3,
-        //             "render": function (data, type, full, meta) {
-        //                 return (data == 'male') ? '<span class="label label-success">Male</span>' : '<span class="label label-warning">Female</span>';
-        //             }
-        //         },
-        //         {
-        //             "targets": 4,
-        //             "render": function (data, type, full, meta) {
-        //                 return (data == 1) ? '<span class="label label-success">Lulus</span>' : '<span class="label label-danger">Tidak Lulus</span>';
-        //             }
-        //         },
-        //         {
-        //             className: 'text-center', targets: [0,1,2,3,4,5]
-        //         }
-        //     ],
-        //     dom: "<'row'<'col-sm-6'l><'col-sm-6'<'row'<'col-sm-6 periode'><'col-sm-6'f>>>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
-        // });
+        table = $('#dataTable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '{{$ajax}}',
+            order: [[1,'asc']],
+            columns: [
+                { data: 'id', searchable: false, orderable: false},
+                { data: 'subject.name', name: 'subject.name', searchable: true, orderable: true},
+                { data: 'score', name: 'score', searchable: false, orderable: true},
+                { data: 'note', name: 'note', searchable: true, orderable: false},
+                { data: 'action', searchable: false, orderable: false}
+            ],
+            columnDefs: [
+                {
+                    "targets": 0,
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        return meta.settings._iDisplayStart + meta.row + 1;
+                    }
+                },
+                // {
+                //     "targets": 2,
+                //     "render": function (data, type, full, meta) {
+                //         return moment().diff(data, 'years');
+                //     }
+                // },
+                // {
+                //     "targets": 3,
+                //     "render": function (data, type, full, meta) {
+                //         return (data == 'male') ? '<span class="label label-success">Male</span>' : '<span class="label label-warning">Female</span>';
+                //     }
+                // },
+                // {
+                //     "targets": 4,
+                //     "render": function (data, type, full, meta) {
+                //         return (data == 1) ? '<span class="label label-success">Lulus</span>' : '<span class="label label-danger">Tidak Lulus</span>';
+                //     }
+                // },
+                {
+                    className: 'text-center', targets: [0,2,4]
+                }
+            ],
+            dom:"<'row'><'row'<'col-sm-12'tr>><'row'>"
+            // dom: "<'row'<'col-sm-6'l><'col-sm-6'<'row'<'col-sm-6 periode'><'col-sm-6'f>>>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
+        });
         // $('.periode').html($(".select-period").detach().removeClass('hide'))
     });
     $(document).on('click', '.delete', function () {
@@ -65,6 +65,21 @@
 	});
     $(document).on('click', '.add-mapel', function () {
         $('#modal-default').modal('toggle')
+    })
+    $(document).on('click', '.edit-mapel', function () {
+        $('#modal-edit').modal('toggle')
+        const url = $(this).data('url')
+        fetch(url)
+        .then((response) => {
+            return response.json()
+        })
+        .then((data) => {
+            $('.id').val(data.id)
+            $('.mapel').val(data.subject_id)
+            $('.nilai').val(data.score)
+            $('.note').val(data.note)
+        });
+
     })
     // $(document).on('change', '.select-period', function () {
     //     let id = $(this).val();
@@ -118,15 +133,16 @@
         <div class="box">
             <div class="box-header with-border">
                 <a href="javascript:void(0)" class="btn btn-primary add-mapel"><i class="fa fa-fw fa-plus"></i> Tambah Mata Pelajaran</a>
+                <a href="javascript:void(0)" class="btn btn-success"><i class="fa fa-fw fa-download"></i> Print Rapor</a>
             </div>
             <div class="box-body">
                 <table id="dataTable" class="table table-bordered table-hover">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Matakuliah</th>
+                            <th class="text-center">Mata Pelajaran</th>
                             <th>Nilai</th>
-                            <th>Capaian Kompetensi</th>
+                            <th class="text-center">Capaian Kompetensi</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -144,10 +160,9 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Default Modal</h4>
+                <h4 class="modal-title">Pilih Mata Pelajaran</h4>
             </div>
             <div class="modal-body">
-                
                 <form action="{{$action}}" id="form1" method="POST" class="form-horizontal">
                 @csrf
                 <input type="hidden" name="student_class_id" value="{{$student_class_id}}"/>
@@ -176,11 +191,56 @@
                         </div>
                     </div>
                 </form>
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
                 <button type="submit" form="form1" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-edit">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Pilih Mata Pelajaran</h4>
+            </div>
+            <div class="modal-body">
+                <form action="{{$update_subject}}" id="form2" method="POST" class="form-horizontal">
+                @csrf
+                <input type="hidden" class="id" name="id" value=""/>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Mata Pelajaran</label>
+                            <div class="col-sm-6">
+                                <select class="form-control mapel" disabled name="subject_id">
+                                    @foreach($all_subjects as $key => $value)
+                                        <option value="{{$value->id}}">{{$value->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Nilai</label>
+                            <div class="col-sm-6">
+                                <input type="number" class="form-control nilai" name="score"  autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Capaian Kompetensi</label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control note" name="note"  autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                <button type="submit" form="form2" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>
