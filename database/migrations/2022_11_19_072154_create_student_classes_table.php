@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('period_id');
             $table->integer('kelas_id');
             $table->integer('student_id');
-            $table->integer('status');
+            $table->integer('status')->default(1);
             $table->timestamps();
         });
     }

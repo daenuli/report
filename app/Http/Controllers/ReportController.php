@@ -9,8 +9,14 @@ use App\Models\Student;
 use App\Models\Subject;
 use App\Models\StudentClass;
 use App\Models\StudentSubject;
+use App\Models\TeacherClass;
+use App\Models\User;
+use App\Models\Extracurricular;
+use App\Models\StudentExtra;
+
 use DataTables;
 use Form;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportController extends Controller
 {
@@ -58,15 +64,89 @@ class ReportController extends Controller
         $data['desc'] = 'Detail';
         $data['kelas'] = $this->table->find($id);
         $data['ajax'] = route($this->uri.'.student', $id);
+        
+        $data['student_list'] = route($this->uri.'.student.list', $id);
+        $data['select_student'] = route($this->uri.'.student.select', $id);
+
+        $data['teacher_list'] = route($this->uri.'.teacher.list', $id);
+        $data['select_teacher'] = route($this->uri.'.teacher.select', $id);
+        
         $data['url'] = route($this->uri.'.index');
         $data['period'] = Period::orderBy('name','desc')->get();
+
         return view($this->folder.'.show', $data);
+    }
+
+    public function teacher_list(Request $request)
+    {
+        $data = User::where('role', 'teacher')->get();
+        
+        return DataTables::of($data)
+        ->addColumn('action', function ($index) {
+            $tag = "<input type='radio' name='user_id' value='".$index->id."'>";
+            return $tag;
+        })
+        ->rawColumns(['id', 'action'])
+        ->make(true);
+    }
+
+    public function select_teacher(Request $request)
+    {
+        if (isset($request->user_id)) {
+            if (!empty($request->periode)) {
+                $periode_id = $request->periode;
+            } else {
+                $periode_id = Period::where('status', 1)->first()->id;
+            }
+            TeacherClass::create([
+                'period_id' => $periode_id,
+                'kelas_id' => $request->kelas_id,
+                'user_id' => $request->user_id,
+            ]);
+        }
+
+        return redirect()->back()->with('success', trans('message.create'));
+    }
+
+    public function student_list(Request $request)
+    {
+        $student_id = StudentClass::where('kelas_id', $request->kelas_id)->pluck('student_id');
+        $data = Student::whereNotIn('id', $student_id)->get();
+        
+        return DataTables::of($data)
+        ->addColumn('action', function ($index) {
+            $tag = "<input type='checkbox' name='student_id[]' value='".$index->id."'>";
+            return $tag;
+        })
+        ->rawColumns(['id', 'action'])
+        ->make(true);
+    }
+
+
+    public function select_student(Request $request)
+    {
+        if (count($request->student_id) > 0) {
+            if (!empty($request->periode)) {
+                $periode_id = $request->periode;
+            } else {
+                $periode_id = Period::where('status', 1)->first()->id;
+            }
+            foreach ($request->student_id as $key => $value) {
+                $data[] = [
+                    'period_id' => $periode_id,
+                    'kelas_id' => $request->kelas_id,
+                    'student_id' => $value,
+                    'status' => 1
+                ];
+            }
+            StudentClass::insert($data);
+        }
+
+        return redirect()->back()->with('success', trans('message.create'));
     }
 
     public function student(Request $request)
     {
-        // if (!$request->ajax()) { return; }
-
         if (!empty($request->period)) {
             $id = $request->period;
         } else {
@@ -96,7 +176,6 @@ class ReportController extends Controller
         $data['desc'] = 'Detail Student';
         $data['action'] = route($this->uri.'.store.mapel');
         $data['ajax'] = route($this->uri.'.student.subject', ['id' => $request->id]);
-        // $data['ajax'] = route($this->uri.'.student.data', ['kelas_id' => $request->kelas_id, 'period_id' => $request->period_id, 'student_id' => $request->student_id]);
         $data['url'] = route($this->uri.'.show', $request->kelas_id);
         $data['student'] = Student::find($request->student_id);
         $data['kelas'] = Kelas::find($request->kelas_id);
@@ -105,14 +184,36 @@ class ReportController extends Controller
         $data['all_subjects'] = Subject::orderBy('name')->get();
         $data['update_subject'] = route($this->uri.'.student.subject.update');
         $data['student_class_id'] = $request->id;
+
+        $data['ajax_extra'] = route($this->uri.'.student.extra', ['id' => $request->id]);
+        $extraId = StudentExtra::where('student_class_id', $request->id)->pluck('extra_id');
+        $data['action_extra'] = route($this->uri.'.store.extra');
+        $data['extra'] = Extracurricular::orderBy('name')->whereNotIn('id', $subjectId)->get();
+
         return view($this->folder.'.detail_student', $data);
         // return response()->json($request->student_id);
     }
 
+    
+    public function data_extra_student(Request $request)
+    {
+        $data = StudentExtra::with('extra:id,name')
+                ->where('student_class_id', $request->id)
+                ->get();
+        return DataTables::of($data)
+        ->addColumn('action', function ($index) {
+            $edit = route($this->uri.'.student.extra.edit', $index->id);
+            $delete = route($this->uri.'.student.extra.delete', $index->id);
+            $tag = "<a href='javascript:void(0)' data-url=".$edit." class='btn btn-primary btn-xs edit-extra'>Edit</a>";
+            $tag .= " <a href=".$delete." class='btn btn-danger btn-xs'>Hapus</a>";
+            return $tag;
+        })
+        ->rawColumns(['id', 'action'])
+        ->make(true);
+    }
+
     public function data_subject_student(Request $request)
     {
-        if (!$request->ajax()) { return; }
-
         $data = StudentSubject::with('subject:id,name')
                 ->where('student_class_id', $request->id)
                 ->get();
@@ -161,6 +262,13 @@ class ReportController extends Controller
     //     return view($this->folder.'.create', $data);
     // }
 
+    public function print(Request $request)
+    {
+        $pdf = Pdf::loadView('report.print');
+        // return $pdf->download('invoice.pdf');
+        return $pdf->stream();
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -170,6 +278,17 @@ class ReportController extends Controller
         ]);
 
         StudentSubject::create($request->all());
+        return redirect()->back()->with('success', trans('message.create'));
+    }
+
+    public function store_extra(Request $request)
+    {
+        $request->validate([
+            'extra_id' => 'required',
+            'note' => 'required',
+        ]);
+
+        StudentExtra::create($request->all());
         return redirect()->back()->with('success', trans('message.create'));
     }
 

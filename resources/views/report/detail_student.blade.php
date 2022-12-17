@@ -10,6 +10,7 @@
 	<script src="{{asset('AdminLTE-2.4.15/dist/js/moment.js')}}"></script>
     <script>
     var table;
+    var table_extra;
     $(function() {
         table = $('#dataTable').DataTable({
             processing: true,
@@ -56,7 +57,32 @@
             dom:"<'row'><'row'<'col-sm-12'tr>><'row'>"
             // dom: "<'row'<'col-sm-6'l><'col-sm-6'<'row'<'col-sm-6 periode'><'col-sm-6'f>>>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
         });
-        // $('.periode').html($(".select-period").detach().removeClass('hide'))
+
+        table_extra = $('#dataTable-extra').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '{{$ajax_extra}}',
+            order: [[1,'asc']],
+            columns: [
+                { data: 'id', searchable: false, orderable: false},
+                { data: 'extra.name', name: 'extra.name', searchable: true, orderable: true},
+                { data: 'note', name: 'note', searchable: true, orderable: false},
+                { data: 'action', searchable: false, orderable: false}
+            ],
+            columnDefs: [
+                {
+                    "targets": 0,
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        return meta.settings._iDisplayStart + meta.row + 1;
+                    }
+                },
+                {
+                    className: 'text-center', targets: [0,3]
+                }
+            ],
+            dom:"<'row'><'row'<'col-sm-12'tr>><'row'>"
+        });
     });
     $(document).on('click', '.delete', function () {
 		if (!confirm("Do you want to delete")){
@@ -65,6 +91,9 @@
 	});
     $(document).on('click', '.add-mapel', function () {
         $('#modal-default').modal('toggle')
+    })
+    $(document).on('click', '.add-extra', function () {
+        $('#modal-extra').modal('toggle')
     })
     $(document).on('click', '.edit-mapel', function () {
         $('#modal-edit').modal('toggle')
@@ -133,7 +162,7 @@
         <div class="box">
             <div class="box-header with-border">
                 <a href="javascript:void(0)" class="btn btn-primary add-mapel"><i class="fa fa-fw fa-plus"></i> Tambah Mata Pelajaran</a>
-                <a href="javascript:void(0)" class="btn btn-success"><i class="fa fa-fw fa-download"></i> Print Rapor</a>
+                <a href="{{route('report.print')}}" class="btn btn-success"><i class="fa fa-fw fa-download"></i> Print Rapor</a>
             </div>
             <div class="box-body">
                 <table id="dataTable" class="table table-bordered table-hover">
@@ -143,6 +172,25 @@
                             <th class="text-center">Mata Pelajaran</th>
                             <th>Nilai</th>
                             <th class="text-center">Capaian Kompetensi</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="box">
+            <div class="box-header with-border">
+                <a href="javascript:void(0)" class="btn btn-primary add-extra"><i class="fa fa-fw fa-plus"></i> Tambah Ekstrakurikuler</a>
+            </div>
+            <div class="box-body">
+                <table id="dataTable-extra" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th class="text-center">Ekstrakurikuler</th>
+                            <th>Keterangan</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -241,6 +289,47 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
                 <button type="submit" form="form2" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modal-extra">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Pilih Ekstrakurikuler</h4>
+            </div>
+            <div class="modal-body">
+                <form action="{{$action_extra}}" id="form5" method="POST" class="form-horizontal">
+                @csrf
+                <input type="hidden" name="student_class_id" value="{{$student_class_id}}"/>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Ekstrakurikuler</label>
+                            <div class="col-sm-6">
+                                <select class="form-control" name="extra_id">
+                                    @foreach($extra as $key => $val)
+                                        <option value="{{$val->id}}">{{$val->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Keterangan</label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" name="note"  autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                <button type="submit" form="form5" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>

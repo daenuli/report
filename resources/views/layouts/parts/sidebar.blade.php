@@ -28,6 +28,11 @@
         <i class="fa fa-folder"></i> <span>Mata Pelajaran</span>
       </a>
     </li>
+    <li class="{{($urlactive == 'extra') ? 'active' : ''}}">
+      <a href="{{url('extra')}}">
+        <i class="fa fa-soccer-ball-o"></i> <span>Ekstrakurikuler</span>
+      </a>
+    </li>
     <li class="{{($urlactive == 'kelas') ? 'active' : ''}}">
       <a href="{{url('kelas')}}">
         <i class="fa fa-trello"></i> <span>Kelas</span>

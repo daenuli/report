@@ -5,20 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class StudentClass extends Model
+class StudentExtra extends Model
 {
     use HasFactory;
-
+    
     protected $fillable = [
-        'period_id',
-        'kelas_id',
-        'student_id',
-        'status'
+        'student_class_id',
+        'extra_id',
+        'note'
     ];
 
-    public function student()
+    public function extra()
     {
-        return $this->belongsTo(Student::class);
+        return $this->belongsTo(Extracurricular::class, 'extra_id');
     }
-
 }
