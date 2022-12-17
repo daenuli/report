@@ -121,6 +121,15 @@
         let url = '{{$ajax}}'
         $('.periode').val(id)
         $('#dataTable').DataTable().ajax.url(`${url}?period=${id}`).load();
+
+        const urls = "{{$check_teacher}}"
+        fetch(`${urls}?periode_id=${id}`)
+        .then((response) => {
+            return response.json()
+        })
+        .then((data) => {
+            $('.teacher-class').text(data)
+        });
 	});
     $(document).on('click', '.add-student', function () {
         $('#modal-default').modal('toggle')
@@ -148,9 +157,10 @@
 
 <div class="box">
     <div class="box-header with-border">
+        <a href="{{url('report')}}" class="btn btn-warning"><i class="fa fa-fw fa-arrow-left"></i> Kembali</a>
         <a href="javascript:void(0)" class="btn btn-primary add-student"><i class="fa fa-fw fa-plus"></i> Tambah Siswa</a>
         <a href="javascript:void(0)" class="btn btn-success add-teacher"><i class="fa fa-fw fa-plus"></i> Pilih Wali Kelas</a>
-        <b>Nama Wali Kelas : </b>
+        <b>Nama Wali Kelas : <span class="teacher-class">{{$teacher->user->name ?? '-'}}</span></b>
     </div>
 	<div class="box-body">
 	  	<table id="dataTable" class="table table-bordered table-hover">

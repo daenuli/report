@@ -53,14 +53,14 @@
 
 <div class="box">
 	<div class="box-header with-border">
-        <a href="{{$create}}" class="btn btn-primary"><i class="fa fa-fw fa-plus"></i> Create</a>
+        <a href="{{$create}}" class="btn btn-primary"><i class="fa fa-fw fa-plus"></i> Tambah</a>
 	</div>
 	<div class="box-body">
 	  	<table id="dataTable" class="table table-bordered table-hover">
             <thead>
 	            <tr>
 					<th>#</th>
-					<th>Name</th>
+					<th>Nama</th>
 					<th>Created At</th>
 					<th>Action</th>
 	            </tr>

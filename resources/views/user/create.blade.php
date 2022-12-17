@@ -17,6 +17,24 @@
                     @enderror
                 </div>
             </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Email</label>
+                <div class="col-sm-8">
+                    <input type="email" class="form-control" name="email" value="{{old('email')}}" autocomplete="off">
+                    @error('email')
+                        <p class="text-red">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Password</label>
+                <div class="col-sm-8">
+                    <input type="password" class="form-control" name="password" autocomplete="off">
+                    @error('password')
+                        <p class="text-red">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
         </div>
         <div class="box-footer">
             <div class="col-sm-8 col-sm-offset-2">

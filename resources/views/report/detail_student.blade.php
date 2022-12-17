@@ -89,11 +89,26 @@
 	      return false;
 	    }
 	});
-    $(document).on('click', '.add-mapel', function () {
-        $('#modal-default').modal('toggle')
-    })
     $(document).on('click', '.add-extra', function () {
         $('#modal-extra').modal('toggle')
+    })
+    $(document).on('click', '.edit-extra', function () {
+        $('#modal-extra-edit').modal('toggle')
+        const url = $(this).data('url')
+        fetch(url)
+        .then((response) => {
+            return response.json()
+        })
+        .then((data) => {
+            $('.extra_student_id').val(data.id)
+            $('.extra_id').val(data.extra_id)
+            $('.note-extra').val(data.note)
+        });
+
+    })
+
+    $(document).on('click', '.add-mapel', function () {
+        $('#modal-default').modal('toggle')
     })
     $(document).on('click', '.edit-mapel', function () {
         $('#modal-edit').modal('toggle')
@@ -142,7 +157,7 @@
                         <b>TTL</b> <a class="pull-right">{{$student->birth_place . ', ' . $student->date_of_birth}}</a>
                     </li>
                     <li class="list-group-item">
-                        <b>Alamat</b> <a class="pull-right">{{$student->address}}</a>
+                        <b>Alamat</b> <a class="pull-right">{{$student->limit()}}</a>
                     </li>
                     <li class="list-group-item">
                         <b>Umur</b> <a class="pull-right">{{\Carbon\Carbon::parse($student->date_of_birth)->age}}</a>
@@ -330,6 +345,47 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
                 <button type="submit" form="form5" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modal-extra-edit">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Pilih Ekstrakurikuler</h4>
+            </div>
+            <div class="modal-body">
+                <form action="{{$update_extra}}" id="form6" method="POST" class="form-horizontal">
+                @csrf
+                <input type="hidden" class="extra_student_id" name="id" value=""/>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Ekstrakurikuler</label>
+                            <div class="col-sm-6">
+                                <select class="form-control extra_id" disabled>
+                                    @foreach($all_extra as $key => $val)
+                                        <option value="{{$val->id}}">{{$val->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Capaian Kompetensi</label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control note-extra" name="note"  autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                <button type="submit" form="form6" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>

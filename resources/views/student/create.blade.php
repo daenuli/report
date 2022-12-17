@@ -19,7 +19,7 @@
 @section('content')
 <div class="box">
 	<div class="box-header with-border">
-        <a href="{{$url}}" class="btn btn-warning"><i class="fa fa-fw fa-arrow-left"></i> Back</a>
+        <a href="{{$url}}" class="btn btn-warning"><i class="fa fa-fw fa-arrow-left"></i> Kembali</a>
 	</div>
     <form action="{{$action}}" method="POST" class="form-horizontal" enctype="multipart/form-data">
     @csrf

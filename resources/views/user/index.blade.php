@@ -13,10 +13,12 @@
             processing: true,
             serverSide: true,
             ajax: '{{$ajax}}',
-            order: [[2,'desc']],
+            order: [[4,'desc']],
             columns: [
                 { data: 'id', searchable: false, orderable: false},
                 { data: 'name', searchable: true, orderable: false},
+                { data: 'email', searchable: true, orderable: false},
+                { data: 'role', searchable: true, orderable: false},
                 { data: 'created_at', searchable: true, orderable: true},
                 { data: 'action', searchable: false, orderable: false}
             ],
@@ -61,6 +63,8 @@
 	            <tr>
 					<th>#</th>
 					<th>Nama</th>
+					<th>Email</th>
+					<th>Role</th>
 					<th>Created At</th>
 					<th>Action</th>
 	            </tr>

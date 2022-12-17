@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Student extends Model
 {
+    const LIMIT = 3;   
+
     use HasFactory;
 
     protected $fillable = [
@@ -19,4 +22,9 @@ class Student extends Model
         'phone',
         'photo'
     ];
+
+    public function limit()
+    {
+        return Str::words($this->address, Student::LIMIT );
+    }
 }

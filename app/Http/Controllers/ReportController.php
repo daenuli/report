@@ -70,11 +70,29 @@ class ReportController extends Controller
 
         $data['teacher_list'] = route($this->uri.'.teacher.list', $id);
         $data['select_teacher'] = route($this->uri.'.teacher.select', $id);
+
+        $periode_id = Period::where('status', 1)->first()->id;
         
+        $data['teacher'] = TeacherClass::where([
+            ['period_id', $periode_id],
+            ['kelas_id', $id]
+        ])->first();
+
         $data['url'] = route($this->uri.'.index');
         $data['period'] = Period::orderBy('name','desc')->get();
+        $data['check_teacher'] = route($this->uri.'.teacher.check', $id);
 
         return view($this->folder.'.show', $data);
+    }
+
+    public function check_teacher(Request $request)
+    {
+        $data = TeacherClass::where([
+            ['period_id', $request->periode_id],
+            ['kelas_id', $request->kelas_id]
+        ])->first()->user->name ?? '-';
+
+        return response()->json($data);
     }
 
     public function teacher_list(Request $request)
@@ -98,11 +116,10 @@ class ReportController extends Controller
             } else {
                 $periode_id = Period::where('status', 1)->first()->id;
             }
-            TeacherClass::create([
-                'period_id' => $periode_id,
-                'kelas_id' => $request->kelas_id,
-                'user_id' => $request->user_id,
-            ]);
+            TeacherClass::updateOrCreate(
+                ['period_id' => $periode_id, 'kelas_id' => $request->kelas_id],
+                ['user_id' => $request->user_id]
+            );
         }
 
         return redirect()->back()->with('success', trans('message.create'));
@@ -188,7 +205,9 @@ class ReportController extends Controller
         $data['ajax_extra'] = route($this->uri.'.student.extra', ['id' => $request->id]);
         $extraId = StudentExtra::where('student_class_id', $request->id)->pluck('extra_id');
         $data['action_extra'] = route($this->uri.'.store.extra');
-        $data['extra'] = Extracurricular::orderBy('name')->whereNotIn('id', $subjectId)->get();
+        $data['all_extra'] = Extracurricular::orderBy('name')->get();
+        $data['extra'] = Extracurricular::orderBy('name')->whereNotIn('id', $extraId)->get();
+        $data['update_extra'] = route($this->uri.'.student.extra.update');
 
         return view($this->folder.'.detail_student', $data);
         // return response()->json($request->student_id);
@@ -227,6 +246,26 @@ class ReportController extends Controller
         })
         ->rawColumns(['id', 'action'])
         ->make(true);
+    }
+
+    public function extra_edit($id)
+    {
+        $data = StudentExtra::find($id);
+        return response()->json($data);
+    }
+
+    public function extra_update(Request $request)
+    {
+        $data = StudentExtra::find($request->id);
+        $data->note = $request->note;
+        $data->save();
+        return redirect()->back()->with('success', trans('message.update'));
+    }
+
+    public function extra_delete($id)
+    {
+        StudentExtra::find($id)->delete();
+        return redirect()->back()->with('success', trans('message.delete'));
     }
 
     public function subject_edit($id)

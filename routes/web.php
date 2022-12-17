@@ -7,6 +7,7 @@ use App\Http\Controllers\KelasController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ExtracurricularController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +37,9 @@ Route::group(['middleware' => ['auth']], function () {
     
     Route::get('subject/data', [SubjectController::class, 'data'])->name('subject.data');
     Route::resource('subject', SubjectController::class);
+    
+    Route::get('extra/data', [ExtracurricularController::class, 'data'])->name('extra.data');
+    Route::resource('extra', ExtracurricularController::class);
 
     Route::get('kelas/data', [KelasController::class, 'data'])->name('kelas.data');
     Route::resource('kelas', KelasController::class);
@@ -69,6 +73,9 @@ Route::group(['middleware' => ['auth']], function () {
     
     Route::get('report/teacher-list/{kelas_id}', [ReportController::class, 'teacher_list'])->name('report.teacher.list');
     Route::post('report/teacher-select/{kelas_id}', [ReportController::class, 'select_teacher'])->name('report.teacher.select');
+
+    Route::get('report/teacher-check/{kelas_id}', [ReportController::class, 'check_teacher'])->name('report.teacher.check');
+
 
     Route::get('report/{kelas_id}', [ReportController::class, 'show'])->name('report.show');
     Route::get('report', [ReportController::class, 'index'])->name('report.index');
