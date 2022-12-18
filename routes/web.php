@@ -8,6 +8,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ExtracurricularController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,13 +48,16 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('student/data', [StudentController::class, 'data'])->name('student.data');
     Route::resource('student', StudentController::class);
 
+    Route::get('user/data', [UserController::class, 'data'])->name('user.data');
+    Route::resource('user', UserController::class);
+
     Route::post('periode/switch_status', [PeriodeController::class, 'switch_status'])->name('periode.switch.status');
     Route::get('periode/data', [PeriodeController::class, 'data'])->name('periode.data');
     Route::resource('periode', PeriodeController::class);
     
     Route::get('report/data', [ReportController::class, 'data'])->name('report.data');
     Route::get('report/detail/{kelas_id}/{period_id}/{student_id}/{id}', [ReportController::class, 'detail_student'])->name('report.student.show');
-    Route::get('report/print', [ReportController::class, 'print'])->name('report.print');
+    Route::get('report/print/{id}', [ReportController::class, 'print'])->name('report.print');
     // Route::get('report/print/{kelas_id}/{period_id}/{student_id}/{id}', [ReportController::class, 'detail_student'])->name('report.student.show');
     Route::get('report/subject/data/{id}', [ReportController::class, 'data_subject_student'])->name('report.student.subject');
 

@@ -9,10 +9,13 @@
         table tr td {
             text-align: left
         }
+        div.container {
+            display: flex
+        }
     </style>
 </head>
 <body>
-    <div>
+    <div class="container">
         <div>
             <table>
                 <tbody>

@@ -209,6 +209,8 @@ class ReportController extends Controller
         $data['extra'] = Extracurricular::orderBy('name')->whereNotIn('id', $extraId)->get();
         $data['update_extra'] = route($this->uri.'.student.extra.update');
 
+        $data['print'] = route($this->uri.'.print', $request->id);
+
         return view($this->folder.'.detail_student', $data);
         // return response()->json($request->student_id);
     }
@@ -301,11 +303,15 @@ class ReportController extends Controller
     //     return view($this->folder.'.create', $data);
     // }
 
-    public function print(Request $request)
+    public function print($id)
     {
-        $pdf = Pdf::loadView('report.print');
-        // return $pdf->download('invoice.pdf');
-        return $pdf->stream();
+        $item = StudentClass::find($id);
+        $data['student'] = Student::find($item->student_id);
+        $data['kelas'] = Kelas::find($item->kelas_id);
+        $data['periode'] = Period::find($item->period_id);
+        $data['subjects'] = StudentSubject::where('student_class_id', $item->id)->orderBy('subject_id')->get();
+        $data['extra'] = StudentExtra::where('student_class_id', $item->id)->orderBy('extra_id')->get();
+        return view('report.new_print', $data);
     }
 
     public function store(Request $request)

@@ -177,7 +177,7 @@
         <div class="box">
             <div class="box-header with-border">
                 <a href="javascript:void(0)" class="btn btn-primary add-mapel"><i class="fa fa-fw fa-plus"></i> Tambah Mata Pelajaran</a>
-                <a href="{{route('report.print')}}" class="btn btn-success"><i class="fa fa-fw fa-download"></i> Print Rapor</a>
+                <a href="{{$print}}" class="btn btn-success"><i class="fa fa-fw fa-download"></i> Print Rapor</a>
             </div>
             <div class="box-body">
                 <table id="dataTable" class="table table-bordered table-hover">

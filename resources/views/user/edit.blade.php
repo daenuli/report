@@ -27,6 +27,15 @@
                     @enderror
                 </div>
             </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Role</label>
+                <div class="col-sm-8">
+                    <select class="form-control" name="role">
+                        <option value="admin" {{$user->role == 'admin' ? 'selected': ''}}>Admin</option>
+                        <option value="teacher" {{$user->role == 'teacher' ? 'selected': ''}}>Guru</option>
+                    </select>
+                </div>
+            </div>
         </div>
         <div class="box-footer">
             <div class="col-sm-8 col-sm-offset-2">
