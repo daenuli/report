@@ -13,6 +13,7 @@ use App\Models\TeacherClass;
 use App\Models\User;
 use App\Models\Extracurricular;
 use App\Models\StudentExtra;
+use App\Models\StudentAttendance;
 
 use DataTables;
 use Form;
@@ -210,9 +211,33 @@ class ReportController extends Controller
         $data['update_extra'] = route($this->uri.'.student.extra.update');
 
         $data['print'] = route($this->uri.'.print', $request->id);
+        $attendance = StudentAttendance::where([
+            ['student_class_id', $request->id],
+            ['student_id', $request->student_id]
+        ])->get()->map(function ($item, $key) {
+            return [
+                'type' => $item->type,
+                'day' => $item->day
+            ];
+        });
+        $data['sakit'] = $attendance->where('type', 'sakit')->first();
+        $data['izin'] = $attendance->where('type', 'izin')->first();
+        $data['tanpa'] = $attendance->where('type', 'tanpa')->first();
+        $data['attendance_url'] = route($this->uri.'.attendance', ['id' => $request->id, 'student_id' => $request->student_id]);
 
         return view($this->folder.'.detail_student', $data);
         // return response()->json($request->student_id);
+    }
+
+    public function attendance(Request $request)
+    {
+        foreach ($request->type as $key => $value) {
+            StudentAttendance::updateOrCreate(
+                ['student_class_id' => $request->id, 'student_id' => $request->student_id, 'type' => $value],
+                ['day' => $request->day[$key]]
+            );
+        }
+        return redirect()->back();
     }
 
     
@@ -311,6 +336,18 @@ class ReportController extends Controller
         $data['periode'] = Period::find($item->period_id);
         $data['subjects'] = StudentSubject::where('student_class_id', $item->id)->orderBy('subject_id')->get();
         $data['extra'] = StudentExtra::where('student_class_id', $item->id)->orderBy('extra_id')->get();
+        $attendance = StudentAttendance::where([
+            ['student_class_id', $id],
+            ['student_id', $item->student_id]
+        ])->get()->map(function ($data, $key) {
+            return [
+                'type' => $data->type,
+                'day' => $data->day
+            ];
+        });
+        $data['sakit'] = $attendance->where('type', 'sakit')->first();
+        $data['izin'] = $attendance->where('type', 'izin')->first();
+        $data['tanpa'] = $attendance->where('type', 'tanpa')->first();
         return view('report.new_print', $data);
     }
 

@@ -214,6 +214,39 @@
                 </table>
             </div>
         </div>
+        <div class="box">
+            <div class="box-body">
+                <form class="form-horizontal" action="{{$attendance_url}}" method="POST">
+                @csrf
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Sakit</label>
+                            <div class="col-sm-9">
+                                <input type="hidden" name="type[]" value="sakit" class="form-control">
+                                <input type="number" name="day[]" value="{{$sakit['day']??''}}" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Izin</label>
+                            <div class="col-sm-9">
+                                <input type="hidden" name="type[]" value="izin" class="form-control">
+                                <input type="number" name="day[]" value="{{$izin['day']??''}}" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Tanpa Keterangan</label>
+                            <div class="col-sm-9">
+                                <input type="hidden" name="type[]" value="tanpa" class="form-control">
+                                <input type="number" name="day[]" value="{{$tanpa['day']??''}}" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <button type="submit" class="btn btn-info pull-right">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 

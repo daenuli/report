@@ -87,7 +87,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('report/store', [ReportController::class, 'store'])->name('report.store.mapel');
 
     Route::post('report/store/extra', [ReportController::class, 'store_extra'])->name('report.store.extra');
-
+    Route::post('report/attendance/{student_id}/{id}', [ReportController::class, 'attendance'])->name('report.attendance');
+    
     
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

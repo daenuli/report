@@ -148,15 +148,15 @@
             <tbody>
                 <tr>
                     <td>Sakit</td>
-                    <td> Hari</td>
+                    <td>{{$sakit['day']??''}} Hari</td>
                 </tr>
                 <tr>
                     <td>Izin</td>
-                    <td> Hari</td>
+                    <td>{{$izin['day']??''}} Hari</td>
                 </tr>
                 <tr>
                     <td>Tanpa Keterangan</td>
-                    <td> Hari</td>
+                    <td>{{$tanpa['day']??''}} Hari</td>
                 </tr>
             </tbody>
         </table>
