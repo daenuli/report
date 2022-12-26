@@ -90,7 +90,33 @@ class StudentController extends Controller
         }
 
         $this->table->create($request->all());
+        // return redirect()->back();
         return redirect(route($this->uri.'.index'))->with('success', trans('message.create'));
+    }
+
+    public function store_api(Request $request)
+    {
+        $request->validate([
+            'nis' => 'required|numeric',
+            'name' => 'required',
+            'address' => 'required',
+            'birth_place' => 'required',
+            'date_of_birth' => 'required',
+            'gender' => 'required',
+            'phone' => 'required|numeric',
+            'foto' => 'nullable|image',
+        ]);
+
+        if($request->hasFile('foto')) {
+            $path = $request->file('foto')->storePublicly('students', 'public_upload');
+            $request->merge([
+                'photo' => (isset($path) && !empty($path)) ? $path : null
+            ]);
+        }
+
+        $this->table->create($request->all());
+        return response()->json(true);
+        // return redirect(route($this->uri.'.index'))->with('success', trans('message.create'));
     }
 
     public function edit($id)
@@ -106,8 +132,22 @@ class StudentController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required'
+            'nis' => 'required|numeric',
+            'name' => 'required',
+            'address' => 'required',
+            'birth_place' => 'required',
+            'date_of_birth' => 'required',
+            'gender' => 'required',
+            'phone' => 'required|numeric',
+            'foto' => 'nullable|image',
         ]);
+
+        if($request->hasFile('foto')) {
+            $path = $request->file('foto')->storePublicly('students', 'public_upload');
+            $request->merge([
+                'photo' => (isset($path) && !empty($path)) ? $path : null
+            ]);
+        }
 
         $this->table->find($id)->update($request->all());
 

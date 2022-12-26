@@ -22,10 +22,12 @@ use App\Http\Controllers\UserController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('front.index');
 });
 
-Route::get('/', function () {
+Route::post('store', [StudentController::class, 'store_api'])->name('store');
+
+Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
